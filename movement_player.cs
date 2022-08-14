@@ -10,6 +10,9 @@ public class movement_player : MonoBehaviour
     float horizontal;
     public float moveSpeed = 15f;
     public float jumpAmount = 10;
+    public Animator animator;
+    public SpriteRenderer sprite;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -20,10 +23,19 @@ public class movement_player : MonoBehaviour
     {
         horizontal = Input.GetAxisRaw("Horizontal");
         rb.velocity = new Vector2(horizontal * moveSpeed, rb.velocity.y);
+        animator.SetFloat("speed", Mathf.Abs(horizontal *moveSpeed));
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             rb.AddForce(Vector2.up * jumpAmount, ForceMode2D.Impulse);
             isGrounded = false;
+        }
+        if (horizontal < 0)
+        {
+            sprite.flipX = true;
+        }
+        if(horizontal > 0)
+        {
+            sprite.flipX = false;
         }
 
     }
