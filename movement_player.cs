@@ -1,10 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 public class movement_player : MonoBehaviour
 {
+
+    public GameObject interactionIcon;
+
+
     private bool isGrounded= true;
     private Rigidbody2D rb;
     float horizontal;
@@ -13,14 +15,19 @@ public class movement_player : MonoBehaviour
     public Animator animator;
     public SpriteRenderer sprite;
 
+    private Vector2 boxSize = new Vector2(0.1f, 1f);
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        interactionIcon.SetActive(false);
     }
 
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.E))
+            checkInteraction();
+
         horizontal = Input.GetAxisRaw("Horizontal");
         rb.velocity = new Vector2(horizontal * moveSpeed, rb.velocity.y);
         animator.SetFloat("speed", Mathf.Abs(horizontal *moveSpeed));
@@ -44,6 +51,31 @@ public class movement_player : MonoBehaviour
         if (other.gameObject.tag == "ground" && isGrounded == false)
         {
             isGrounded = true;
+        }
+    }
+
+    public void openInteractebleIcon()
+    {
+        interactionIcon.SetActive(true);
+    }
+    public void closeInteractebleIcon()
+    {
+        interactionIcon.SetActive(false);
+    }
+    private void checkInteraction()
+    {
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, boxSize, 0, Vector2.zero);
+
+        if(hits.Length > 0)
+        {
+            foreach(RaycastHit2D rc in hits)
+            {
+                if (rc.isInteractable())
+                {
+                    rc.interact();
+                    return;
+                }
+            }
         }
     }
 }
